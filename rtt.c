@@ -224,11 +224,15 @@ void ShutDown ( ESContext *esContext )
    UserData *userData = esContext->userData;
 
    // Delete texture object
-   glDeleteTextures ( 1, &userData->baseMapTexId );
-   glDeleteTextures ( 1, &userData->lightMapTexId );
+   glDeleteTextures ( 1, &userData->texture );
 
    // Delete program object
    glDeleteProgram ( userData->programObject );
+   glDeleteProgram ( userData->programObjectScr );
+
+   // Delete renderbuffer and framebuffer objects
+   glDeleteRenderbuffers(1, &userData->depthRenderbuffer);
+   glDeleteFramebuffers(1, &userData->framebuffer);
 }
 
 int main() 
