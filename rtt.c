@@ -154,7 +154,7 @@ void InitFBO( ESContext *esContext)
         // cannot use framebuffer objects as we need to create
         // a depth buffer as a renderbuffer object
         printf("Cannot use framebuffer objects!\n");
-        return -1; 
+        exit(EXIT_FAILURE);
     }
     // generate the framebuffer, renderbuffer, and texture object names
     glGenFramebuffers(1, &userData->framebuffer);
@@ -192,7 +192,7 @@ void InitFBO( ESContext *esContext)
     if(status != GL_FRAMEBUFFER_COMPLETE)
     {
         printf("Framebuffer object is not complete!\n");
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
     // Draw a triangle to FBO
