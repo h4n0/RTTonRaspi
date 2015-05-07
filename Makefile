@@ -18,10 +18,10 @@ COMMONHRD=esUtil.h
 
 default: all
 
-all: ./rtt 
+all: rtt 
 
 clean:
 	rm -f rtt *.o
 
-./rtt:${COMMONSRC} ${COMMONHDR}
-	gcc $(CFLAGS) ${COMMONSRC} -o $@ ${INCDIR} ${LIBS}
+rtt:${COMMONSRC} ${COMMONHDR} rtt.c
+	gcc $(CFLAGS) ${COMMONSRC} rtt.c -o rtt ${INCDIR} ${LIBS}
