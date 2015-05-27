@@ -5,7 +5,8 @@
 typedef struct
 {
    // Handle to a render-to-texture program object
-   GLuint programObject;
+   GLuint programObjectRed;
+   GLuint programObjectBlue;
    // Handle to a texture-render-to-screen program object
    GLuint programObjectScr;
 
@@ -23,7 +24,7 @@ typedef struct
 
 } UserData;
 
-int Init ( ESContext *esContext )
+int InitRedTriangle ( ESContext *esContext )
 {
    UserData *userData = esContext->userData;
    GLbyte vShaderStr[] =  
@@ -41,7 +42,7 @@ int Init ( ESContext *esContext )
       "}                                                   \n";
 
    // Load the shaders and get a linked program object
-   userData->programObject = esLoadProgram ( vShaderStr, fShaderStr );
+   userData->programObjectRed = esLoadProgram ( vShaderStr, fShaderStr );
 
    // Bind vPosition to attribute 0   
    glBindAttribLocation ( userData->programObject, 0, "vposition" );
@@ -50,19 +51,51 @@ int Init ( ESContext *esContext )
    return TRUE;
 }
 
+int InitBlueTriangle ( ESContext *esContext )
+{
+   UserData *userData = esContext->userData;
+   GLbyte vShaderStr[] =  
+      "attribute vec4 vposition;   \n"
+      "void main()                  \n"
+      "{                            \n"
+      "   gl_Position = vposition; \n"
+      "}                            \n";
+   
+   GLbyte fShaderStr[] =  
+      "precision mediump float;                            \n"
+      "void main()                                         \n"
+      "{                                                   \n"
+      "  gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);          \n"
+      "}                                                   \n";
+
+   // Load the shaders and get a linked program object
+   userData->programObjectBlue = esLoadProgram ( vShaderStr, fShaderStr );
+
+   // Bind vPosition to attribute 0   
+   glBindAttribLocation ( userData->programObject, 0, "vposition" );
+
+   glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
+   return TRUE;
+}
+
+int Init ( ESContext *esContext )
+{
+    return InitRedTriangle ( esContext ) && InitBlueTriangle ( esContext );
+}
+ 
 ///
 // Draw the rendered texture back to screen
 //
 void RenderToScreen ( ESContext *esContext)
 {
    UserData *userData = esContext->userData;
-   GLfloat vVertices[] = { -0.5f,  0.5f, 0.0f,  // Position 0
+   GLfloat vVertices[] = { -0.5f, -0.5f, 0.0f,  // Position 0
                             0.0f,  0.0f,        // TexCoord 0 
-                           -0.5f, -0.5f, 0.0f,  // Position 1
+                            0.5f, -0.5f, 0.0f,  // Position 1
                             0.0f,  1.0f,        // TexCoord 1
-                            0.5f, -0.5f, 0.0f,  // Position 2
+                            0.5f,  0.5f, 0.0f,  // Position 2
                             1.0f,  1.0f,        // TexCoord 2
-                            0.5f,  0.5f, 0.0f,  // Position 3
+                           -0.5f,  0.5f, 0.0f,  // Position 3
                             1.0f,  0.0f         // TexCoord 3
                          };
    GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
