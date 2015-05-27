@@ -11,8 +11,10 @@ typedef struct
    GLuint programObjectScr;
 
    // Attribute locations
-   GLint  positionLoc;
-   GLint  texCoordLoc;
+   GLint  positionLocRed;
+   GLint  texCoordLocRed;
+   GLint  positionLocBlue;
+   GLint  texCoordLocBlue;
 
    // Sampler location
    GLint samplerLoc;
@@ -101,8 +103,10 @@ void RenderToScreen ( ESContext *esContext)
    GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 
    GLbyte vShaderStr[] =  
-      "attribute vec4 a_position;   \n"
-      "attribute vec2 a_texCoord;   \n"
+      "attribute vec4 a_position1;   \n"
+      "attribute vec2 a_texCoord1;   \n"
+      "attribute vec4 a_position2;   \n"
+      "attribute vec2 a_texCoord2;   \n"
       "varying vec2 v_texCoord;     \n"
       "void main()                  \n"
       "{                            \n"
@@ -123,8 +127,8 @@ void RenderToScreen ( ESContext *esContext)
    userData->programObjectScr = esLoadProgram ( vShaderStr, fShaderStr );
 
    // Get the attribute locations
-   userData->positionLoc = glGetAttribLocation ( userData->programObjectScr, "a_position" );
-   userData->texCoordLoc = glGetAttribLocation ( userData->programObjectScr, "a_texCoord" );
+   userData->positionLocRed = glGetAttribLocation ( userData->programObjectScr, "a_position1" );
+   userData->texCoordLocRed = glGetAttribLocation ( userData->programObjectScr, "a_texCoord1" );
    
    // Get the sampler location
    userData->samplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_texture" );
