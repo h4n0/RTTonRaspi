@@ -15,7 +15,8 @@ typedef struct
    GLint  texCoordLoc;
 
    // Sampler location
-   GLint samplerLoc;
+   GLint redSamplerLoc;
+   GLint blueSamplerLoc;
 
    // FBO and its buffers handle 
    GLuint    framebuffer;
@@ -45,7 +46,7 @@ int InitRedTriangle ( ESContext *esContext )
    userData->programObjectRed = esLoadProgram ( vShaderStr, fShaderStr );
 
    // Bind vPosition to attribute 0   
-   glBindAttribLocation ( userData->programObject, 0, "vposition" );
+   glBindAttribLocation ( userData->programObjectRed, 0, "vposition" );
 
    glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
    return TRUE;
@@ -72,7 +73,7 @@ int InitBlueTriangle ( ESContext *esContext )
    userData->programObjectBlue = esLoadProgram ( vShaderStr, fShaderStr );
 
    // Bind vPosition to attribute 0   
-   glBindAttribLocation ( userData->programObject, 0, "vposition" );
+   glBindAttribLocation ( userData->programObjectBlue, 0, "vposition" );
 
    glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
    return TRUE;
@@ -123,7 +124,8 @@ void RenderToScreen ( ESContext *esContext)
       "  redTriangle = texture2D( s_triangle_red, v_texCoord );\n"
       "  blueTriangle = texture2D( s_triangle_blue, v_texCoord );\n"
       "                                                   \n"
-      "  gl_FragColor = redTriangle + blueTriangle\n"
+      " // gl_FragColor = redTriangle + blueTriangle;\n"
+      "  gl_FragColor = redTriangle;\n"
       "}                                                   \n";
 
    // Load the shaders and get a linked program object
@@ -134,8 +136,8 @@ void RenderToScreen ( ESContext *esContext)
    userData->texCoordLoc = glGetAttribLocation ( userData->programObjectScr, "a_texCoord" );
    
    // Get the sampler location
-   userData->positionLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_red" );
-   userData->texCoordLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_blue" );
+   userData->redSamplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_red" );
+   userData->blueSamplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_blue" );
 
    // Set the viewport
    glViewport ( 0, 0, esContext->width, esContext->height );
@@ -248,7 +250,7 @@ void InitFBO( ESContext *esContext)
    glClear ( GL_COLOR_BUFFER_BIT );
 
    // Use the program object
-   glUseProgram ( userData->programObject );
+   glUseProgram ( userData->programObjectScr );
 
    // Load the vertex position
    glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
@@ -270,7 +272,8 @@ void ShutDown ( ESContext *esContext )
    glDeleteTextures ( 1, &userData->texture );
 
    // Delete program object
-   glDeleteProgram ( userData->programObject );
+   glDeleteProgram ( userData->programObjectRed );
+   glDeleteProgram ( userData->programObjectBlue );
    glDeleteProgram ( userData->programObjectScr );
 
    // Delete renderbuffer and framebuffer objects
