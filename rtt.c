@@ -11,10 +11,8 @@ typedef struct
    GLuint programObjectScr;
 
    // Attribute locations
-   GLint  positionLocRed;
-   GLint  texCoordLocRed;
-   GLint  positionLocBlue;
-   GLint  texCoordLocBlue;
+   GLint  positionLoc;
+   GLint  texCoordLoc;
 
    // Sampler location
    GLint samplerLoc;
@@ -103,10 +101,8 @@ void RenderToScreen ( ESContext *esContext)
    GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 
    GLbyte vShaderStr[] =  
-      "attribute vec4 a_position1;   \n"
-      "attribute vec2 a_texCoord1;   \n"
-      "attribute vec4 a_position2;   \n"
-      "attribute vec2 a_texCoord2;   \n"
+      "attribute vec4 a_position;   \n"
+      "attribute vec2 a_texCoord;   \n"
       "varying vec2 v_texCoord;     \n"
       "void main()                  \n"
       "{                            \n"
@@ -117,21 +113,29 @@ void RenderToScreen ( ESContext *esContext)
    GLbyte fShaderStr[] =  
       "precision mediump float;                            \n"
       "varying vec2 v_texCoord;                            \n"
-      "uniform sampler2D s_texture;                        \n"
+      "uniform sampler2D s_triangle_red;                        \n"
+      "uniform sampler2D s_triangle_blue;                        \n"
       "void main()                                         \n"
       "{                                                   \n"
-      "  gl_FragColor = texture2D( s_texture, v_texCoord );\n"
+      "  vec4 redTriangle;                                 \n"
+      "  vec4 blueTriangle;                                 \n"
+      "                                                   \n"
+      "  redTriangle = texture2D( s_triangle_red, v_texCoord );\n"
+      "  blueTriangle = texture2D( s_triangle_blue, v_texCoord );\n"
+      "                                                   \n"
+      "  gl_FragColor = redTriangle + blueTriangle\n"
       "}                                                   \n";
 
    // Load the shaders and get a linked program object
    userData->programObjectScr = esLoadProgram ( vShaderStr, fShaderStr );
 
    // Get the attribute locations
-   userData->positionLocRed = glGetAttribLocation ( userData->programObjectScr, "a_position1" );
-   userData->texCoordLocRed = glGetAttribLocation ( userData->programObjectScr, "a_texCoord1" );
+   userData->positionLoc = glGetAttribLocation ( userData->programObjectScr, "a_position" );
+   userData->texCoordLoc = glGetAttribLocation ( userData->programObjectScr, "a_texCoord" );
    
    // Get the sampler location
-   userData->samplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_texture" );
+   userData->positionLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_red" );
+   userData->texCoordLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_blue" );
 
    // Set the viewport
    glViewport ( 0, 0, esContext->width, esContext->height );
