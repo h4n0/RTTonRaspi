@@ -31,3 +31,6 @@ rtt
 
 # Debug files
 *.dSYM/
+
+# Temperary files
+*.swp
