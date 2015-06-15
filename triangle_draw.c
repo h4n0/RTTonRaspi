@@ -1,4 +1,5 @@
-#include triangle_draw.h
+#include "triangle_draw.h"
+#include "rtt.h"
 
 int InitRedTriangle ( ESContext *esContext )
 {

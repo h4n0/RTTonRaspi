@@ -1,31 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "esUtil.h"
+#include "rtt.h"
 #include "triangle_draw.h"
-
-typedef struct
-{
-   // Handle to a render-to-texture program object
-   GLuint programObjectRed;
-   GLuint programObjectBlue;
-   // Handle to a texture-render-to-screen program object
-   GLuint programObjectScr;
-
-   // Attribute locations
-   GLint  positionLoc;
-   GLint  texCoordLoc;
-
-   // Sampler location
-   GLint redSamplerLoc;
-   GLint blueSamplerLoc;
-
-   // FBO and its buffers handle 
-   GLuint    framebuffer;
-   GLuint    depthRenderbuffer;
-   GLuint    texture;
-
-} UserData;
-
 
 ///
 // Init shaders of drawing triangles 

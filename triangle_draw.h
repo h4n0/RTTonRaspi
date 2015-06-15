@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "esUtil.h"
 
-int InitRedTriangle ( ESContext *esContext )
-int InitBlueTriangle ( ESContext *esContext )
+int InitRedTriangle ( ESContext *esContext );
+int InitBlueTriangle ( ESContext *esContext );
 
 #endif
