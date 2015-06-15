@@ -7,6 +7,14 @@
 
 typedef struct
 {
+   // FBO and its buffers handle 
+   GLuint    framebuffer;
+   GLuint    depthRenderbuffer;
+   GLuint    texture;
+} RenderFBO;
+
+typedef struct
+{
    // Handle to a render-to-texture program object
    GLuint programObjectRed;
    GLuint programObjectBlue;
@@ -21,10 +29,9 @@ typedef struct
    GLint redSamplerLoc;
    GLint blueSamplerLoc;
 
-   // FBO and its buffers handle 
-   GLuint    framebuffer;
-   GLuint    depthRenderbuffer;
-   GLuint    texture;
+   // FBOs for client side rendering
+   RenderFBO redFBO;
+   RenderFBO blueFBO;
 
 } UserData;
 
