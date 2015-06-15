@@ -41,6 +41,8 @@ void RenderToScreen ( ESContext *esContext)
       "varying vec2 v_texCoord;                            \n"
       "uniform sampler2D s_triangle_red;                        \n"
       "uniform sampler2D s_triangle_blue;                        \n"
+      "uniform sampler2D depth_red;                        \n"
+      "uniform sampler2D depth_blue;                        \n"
       "void main()                                         \n"
       "{                                                   \n"
       "  vec4 redTriangle;                                 \n"
@@ -49,8 +51,11 @@ void RenderToScreen ( ESContext *esContext)
       "  redTriangle = texture2D( s_triangle_red, v_texCoord );\n"
       "  blueTriangle = texture2D( s_triangle_blue, v_texCoord );\n"
       "                                                   \n"
-      "  gl_FragColor = redTriangle + blueTriangle;\n"
-      " // gl_FragColor = redTriangle;\n"
+      "//  gl_FragColor = redTriangle + blueTriangle;\n"
+      "  if(depth_red.z>depth_blue.z)                  \n"
+      "    gl_FragColor = redTriangle;\n"
+      "  else                               \n"
+      "    gl_FragColor = blueTriangle;\n"
       "}                                                   \n";
 
    // Load the shaders and get a linked program object
@@ -63,6 +68,12 @@ void RenderToScreen ( ESContext *esContext)
    // Get the sampler location
    userData->redSamplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_red" );
    userData->blueSamplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_blue" );
+
+   //FIXME
+   GLint redDepth;
+   GLint blueDepth;
+   redDepth = glGetUniformLocation ( userData->programObjectScr, "depth_red" );
+   blueDepth = glGetUniformLocation ( userData->programObjectScr, "depth_blue" );
 
    // Set the viewport
    glViewport ( 0, 0, esContext->width, esContext->height );
@@ -97,6 +108,20 @@ void RenderToScreen ( ESContext *esContext)
 
    // Set the sampler texture unit to 0
    glUniform1i ( userData->blueSamplerLoc, 1 );
+
+   // Bind the texture
+   glActiveTexture ( GL_TEXTURE2 );
+   glBindTexture ( GL_TEXTURE_2D, userData->redFBO.depthbuffer );
+
+   // Set the sampler texture unit to 0
+   glUniform1i ( redDepth, 2 );
+
+   // Bind the texture
+   glActiveTexture ( GL_TEXTURE3 );
+   glBindTexture ( GL_TEXTURE_2D, userData->blueFBO.depthbuffer );
+
+   // Set the sampler texture unit to 0
+   glUniform1i ( blueDepth, 3 );
    /// FIXEND
 
    glDrawElements ( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
@@ -132,9 +157,9 @@ void ShutDown ( ESContext *esContext )
    glDeleteProgram ( userData->programObjectScr );
 
    // Delete renderbuffer and framebuffer objects
-   glDeleteRenderbuffers(1, &userData->redFBO.depthRenderbuffer);
+   glDeleteTextures(1, &userData->redFBO.depthbuffer);
    glDeleteFramebuffers(1, &userData->redFBO.framebuffer);
-   glDeleteRenderbuffers(1, &userData->blueFBO.depthRenderbuffer);
+   glDeleteTextures(1, &userData->blueFBO.depthbuffer);
    glDeleteFramebuffers(1, &userData->blueFBO.framebuffer);
 }
 

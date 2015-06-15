@@ -9,7 +9,7 @@ typedef struct
 {
    // FBO and its buffers handle 
    GLuint    framebuffer;
-   GLuint    depthRenderbuffer;
+   GLuint    depthbuffer;
    GLuint    texture;
 } RenderFBO;
 

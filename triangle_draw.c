@@ -75,7 +75,7 @@ void InitFBO( ESContext *esContext, RenderFBO *renderFBO, GLuint programObj)
     }
     // generate the framebuffer, renderbuffer, and texture object names
     glGenFramebuffers(1, &renderFBO->framebuffer);
-    glGenRenderbuffers(1, &renderFBO->depthRenderbuffer);
+    glGenTextures(1, &renderFBO->depthbuffer);
     glGenTextures(1, &renderFBO->texture);
 
     // bind texture and load the texture mip-level 0
@@ -93,8 +93,14 @@ void InitFBO( ESContext *esContext, RenderFBO *renderFBO, GLuint programObj)
     // bind renderbuffer and create a 16-bit depth buffer
     // width and height of renderbuffer = width and height of
     // the texture
-    glBindRenderbuffer(GL_RENDERBUFFER, renderFBO->depthRenderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, texWidth, texHeight);
+    // Changed to texture for depth buffer
+    glBindTexture(GL_TEXTURE_2D, renderFBO->depthbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, texWidth, texHeight,
+            0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     // bind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, renderFBO->framebuffer);
@@ -102,7 +108,7 @@ void InitFBO( ESContext *esContext, RenderFBO *renderFBO, GLuint programObj)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderFBO->texture, 0);
 
     // specify depth_renderbufer as depth attachment
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderFBO->depthRenderbuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderFBO->depthbuffer, 0);
 
     // check for framebuffer complete
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -113,9 +119,12 @@ void InitFBO( ESContext *esContext, RenderFBO *renderFBO, GLuint programObj)
     }
 
     // Draw a triangle to FBO
-   GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f, 
-                           -0.5f, -0.5f, 0.0f,
-                            0.5f, -0.5f, 0.0f };
+   GLfloat vVertices[] = {  0.0f,  0.5f, 0.5f, 
+                           -0.5f, -0.5f,-0.5f,
+                            0.5f, -0.5f,-0.5f };
+   GLfloat vVerticesReverse[] = {  0.0f, -0.5f, 0.5f, 
+                           -0.5f,  0.5f,-0.5f,
+                            0.5f,  0.5f,-0.5f };
 
    // Set the viewport
    glViewport ( 0, 0, esContext->width, esContext->height );
@@ -126,8 +135,12 @@ void InitFBO( ESContext *esContext, RenderFBO *renderFBO, GLuint programObj)
    // Use the program object
    glUseProgram ( programObj );
 
+   //FIXME
    // Load the vertex position
-   glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
+   if(programObj==userData->programObjectRed)
+       glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
+   else
+       glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVerticesReverse );
 
    glEnableVertexAttribArray ( 0 );
 
