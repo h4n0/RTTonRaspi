@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "esUtil.h"
+#include "triangle_draw.h"
 
 typedef struct
 {
@@ -25,60 +26,10 @@ typedef struct
 
 } UserData;
 
-int InitRedTriangle ( ESContext *esContext )
-{
-   UserData *userData = esContext->userData;
-   GLbyte vShaderStr[] =  
-      "attribute vec4 vposition;   \n"
-      "void main()                  \n"
-      "{                            \n"
-      "   gl_Position = vposition; \n"
-      "}                            \n";
-   
-   GLbyte fShaderStr[] =  
-      "precision mediump float;                            \n"
-      "void main()                                         \n"
-      "{                                                   \n"
-      "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);          \n"
-      "}                                                   \n";
 
-   // Load the shaders and get a linked program object
-   userData->programObjectRed = esLoadProgram ( vShaderStr, fShaderStr );
-
-   // Bind vPosition to attribute 0   
-   glBindAttribLocation ( userData->programObjectRed, 0, "vposition" );
-
-   glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
-   return TRUE;
-}
-
-int InitBlueTriangle ( ESContext *esContext )
-{
-   UserData *userData = esContext->userData;
-   GLbyte vShaderStr[] =  
-      "attribute vec4 vposition;   \n"
-      "void main()                  \n"
-      "{                            \n"
-      "   gl_Position = vposition; \n"
-      "}                            \n";
-   
-   GLbyte fShaderStr[] =  
-      "precision mediump float;                            \n"
-      "void main()                                         \n"
-      "{                                                   \n"
-      "  gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);          \n"
-      "}                                                   \n";
-
-   // Load the shaders and get a linked program object
-   userData->programObjectBlue = esLoadProgram ( vShaderStr, fShaderStr );
-
-   // Bind vPosition to attribute 0   
-   glBindAttribLocation ( userData->programObjectBlue, 0, "vposition" );
-
-   glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
-   return TRUE;
-}
-
+///
+// Init shaders of drawing triangles 
+//
 int Init ( ESContext *esContext )
 {
     return InitRedTriangle ( esContext ) && InitBlueTriangle ( esContext );
@@ -163,7 +114,8 @@ void RenderToScreen ( ESContext *esContext)
    glBindTexture ( GL_TEXTURE_2D, userData->texture );
 
    // Set the sampler texture unit to 0
-   glUniform1i ( userData->samplerLoc, 0 );
+   glUniform1i ( userData->redSamplerLoc, 0 );
+   glUniform1i ( userData->blueSamplerLoc, 0 );
 
    glDrawElements ( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
 

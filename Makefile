@@ -13,8 +13,10 @@ CFLAGS+=-DRPI_NO_X
 COMMONSRC=./Common/esShader.c    \
           ./Common/esTransform.c \
           ./Common/esShapes.c    \
-          ./Common/esUtil.c
-COMMONHRD=esUtil.h
+          ./Common/esUtil.c      \
+		  ./triangle_draw.c
+COMMONHRD=esUtil.h               \
+		  triangle_draw.h
 
 default: all
 
