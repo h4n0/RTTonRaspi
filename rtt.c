@@ -50,7 +50,7 @@ void RenderToScreen ( ESContext *esContext)
       "  blueTriangle = texture2D( s_triangle_blue, v_texCoord );\n"
       "                                                   \n"
       "  gl_FragColor = redTriangle + blueTriangle;\n"
-      " // gl_FragColor = redTriangle;\n"
+      "  //gl_FragColor = blueTriangle;\n"
       "}                                                   \n";
 
    // Load the shaders and get a linked program object
@@ -64,11 +64,13 @@ void RenderToScreen ( ESContext *esContext)
    userData->redSamplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_red" );
    userData->blueSamplerLoc = glGetUniformLocation ( userData->programObjectScr, "s_triangle_blue" );
 
+   glEnable(GL_DEPTH_TEST);
+
    // Set the viewport
    glViewport ( 0, 0, esContext->width, esContext->height );
    
    // Clear the color buffer
-   glClear ( GL_COLOR_BUFFER_BIT );
+    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
    // Use the program object
    glUseProgram ( userData->programObjectScr );

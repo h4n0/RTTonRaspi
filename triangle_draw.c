@@ -50,6 +50,8 @@ int InitBlueTriangle ( ESContext *esContext )
    // Bind vPosition to attribute 0   
    glBindAttribLocation ( userData->programObjectBlue, 0, "vposition" );
 
+   glEnable(GL_DEPTH_TEST);
+
    glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
    return TRUE;
 }
@@ -113,21 +115,28 @@ void InitFBO( ESContext *esContext, RenderFBO *renderFBO, GLuint programObj)
     }
 
     // Draw a triangle to FBO
-   GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f, 
-                           -0.5f, -0.5f, 0.0f,
-                            0.5f, -0.5f, 0.0f };
+    GLfloat vVertices[] = {  0.0f,  0.5f, 0.5f, 
+                           -0.5f, -0.5f,-0.5f,
+                            0.5f, -0.5f,-0.5f };
+    GLfloat vVerticesReverse[] = 
+                         {  0.0f, -0.5f, 0.5f, 
+                           -0.5f,  0.5f,-0.5f,
+                            0.5f,  0.5f,-0.5f };
 
-   // Set the viewport
-   glViewport ( 0, 0, esContext->width, esContext->height );
-   
-   // Clear the color buffer
-   glClear ( GL_COLOR_BUFFER_BIT );
+    // Set the viewport
+    glViewport ( 0, 0, esContext->width, esContext->height );
 
-   // Use the program object
-   glUseProgram ( programObj );
+    // Clear the color buffer
+    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-   // Load the vertex position
-   glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
+    // Use the program object
+    glUseProgram ( programObj );
+
+    // Load the vertex position
+    if(programObj==userData->programObjectRed)
+          glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
+    else
+          glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVerticesReverse );
 
    glEnableVertexAttribArray ( 0 );
 
